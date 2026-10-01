@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Админ — Библиотека</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f4f4; color: #222; margin: 0; padding: 20px; }
+    .container { max-width: 1100px; margin: 0 auto; }
+    .box { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); margin-bottom: 20px; }
+    h1, h2 { color: #25496b; }
+    .auth { max-width: 320px; }
+    input, select, button { font-size: 14px; padding: 8px 10px; border-radius: 6px; border: 1px solid #c8d5e1; }
+    button { background: #25496b; color: white; border: none; cursor: pointer; }
+    .row { display: flex; gap: 12px; align-items: end; flex-wrap: wrap; }
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; font-size: 13px; }
+    th { background: #eef3f8; }
+    .warn { color: #a12b2b; margin-bottom: 10px; }
+    .ok { color: #186b3d; margin-bottom: 10px; }
+    .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .link {
+      display: inline-block;
+      background: #25496b;
+      color: white;
+      text-decoration: none;
+      padding: 9px 14px;
+      border-radius: 6px;
+      margin-left: 8px;
+      font-weight: bold;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="topbar">
+      <h1>Админ-панель</h1>
+      <div>
+        <a class="link" href="{{ url_for('index') }}">Книги</a>
+        {% if admin_logged_in %}
+          <a class="link" href="{{ url_for('admin_logout') }}">Выйти</a>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if error %}
+      <div class="warn">{{ error }}</div>
+    {% endif %}
+    {% if session.get('admin_message') %}
+      <div class="ok">{{ session.pop('admin_message') }}</div>
+    {% endif %}
+
+    {% if not admin_logged_in %}
+      <div class="box auth">
+        <h2>Вход</h2>
+        <form method="post" autocomplete="off">
+          <div class="field">
+            <label for="password">Пароль</label>
+            <input type="password" id="password" name="password" autocomplete="new-password" required>
+          </div>
+          <p></p>
+          <button type="submit">Войти</button>
+        </form>
+      </div>
+    {% else %}
+      <div class="box">
+        <h2>Выдать книгу</h2>
+        {% if not books or not readers %}
+          <div class="warn">
+            {% if not books %}В базе нет доступных книг.{% endif %}
+            {% if not books and not readers %} {% endif %}
+            {% if not readers %}В базе нет читателей.{% endif %}
+          </div>
+        {% endif %}
+        <form method="post" action="{{ url_for('admin_issue') }}">
+          <div class="row">
+            <div class="field">
+              <label for="book_id">Книга</label>
+              <select id="book_id" name="book_id" required>
+                {% for book in books %}
+                  <option value="{{ book.id }}">{{ book.title }} — {{ book.author }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="field">
+              <label for="reader_id">Читатель</label>
+              <select id="reader_id" name="reader_id" required>
+                {% for reader in readers %}
+                  <option value="{{ reader.id }}">{{ reader.name }}{% if reader.phone %} ({{ reader.phone }}){% endif %}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="field">
+              <label for="due_date">Срок возврата</label>
+              <input type="date" id="due_date" name="due_date">
+            </div>
+            <div class="field">
+              <button type="submit" {% if not books or not readers %}disabled{% endif %}>Выдать</button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="box">
+        <h2>Активные выдачи</h2>
+        {% if loans %}
+          <table>
+            <thead>
+              <tr>
+                <th>Книга</th>
+                <th>Читатель</th>
+                <th>Дата выдачи</th>
+                <th>Срок</th>
+                <th>Действие</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for loan in loans %}
+                <tr>
+                  <td>{{ loan.title }}</td>
+                  <td>{{ loan.reader }}{% if loan.phone %} ({{ loan.phone }}){% endif %}</td>
+                  <td>{{ loan.issue_date }}</td>
+                  <td>{{ loan.due_date or '—' }}</td>
+                  <td>
+                    <form method="post" action="{{ url_for('admin_return') }}">
+                      <input type="hidden" name="loan_id" value="{{ loan.loan_id }}">
+                      <input type="hidden" name="book_id" value="{{ loan.book_id }}">
+                      <button type="submit">Вернуть</button>
+                    </form>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <p>Активных выдач нет.</p>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+</body>
+</html>

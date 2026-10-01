@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Jewish Home Library YVN</title>
+  <meta name="description" content="Открытый каталог книг Jewish Home Library YVN: названия, авторы и доступность книг.">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      color: #222;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .site-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 14px;
+      padding: 12px 16px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .site-logo {
+      width: 56px;
+      height: 56px;
+      object-fit: contain;
+      display: block;
+    }
+    .site-title {
+      margin: 0;
+      color: #25496b;
+      font-size: 28px;
+      line-height: 1.2;
+    }
+    .site-subtitle {
+      margin-top: 4px;
+      color: #666;
+      font-size: 12px;
+      letter-spacing: 0.5px;
+    }
+    h1, h2 {
+      margin-top: 0;
+      color: #25496b;
+    }
+    .tabs {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .tab-button {
+      display: inline-block;
+      background: #ddd;
+      color: #222;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      text-decoration: none;
+      font-size: 14px;
+    }
+    .tab-button.active {
+      background: #25496b;
+      color: white;
+    }
+    .box {
+      background: white;
+      padding: 18px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      display: none;
+    }
+    .box.active {
+      display: block;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid #ddd;
+      text-align: left;
+      font-size: 13px;
+    }
+    th {
+      background: #eef3f8;
+    }
+    .search-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 8px 0 12px 0;
+    }
+    .search-input {
+      width: min(320px, 100%);
+      padding: 8px 10px;
+      border: 1px solid #b9c4d0;
+      border-radius: 6px;
+      font-size: 13px;
+    }
+    .note {
+      color: #666;
+      font-size: 12px;
+    }
+    .bc-form {
+      background: #eef4f8;
+      border: 1px solid #d0dce8;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 14px;
+    }
+    .bc-form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 10px;
+      align-items: end;
+    }
+    .bc-form label {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 12px;
+      color: #25496b;
+      font-weight: bold;
+    }
+    .bc-form input {
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #b9c4d0;
+      font-size: 13px;
+    }
+    .bc-submit {
+      background: #25496b;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 16px;
+      cursor: pointer;
+      font-weight: bold;
+      height: fit-content;
+    }
+    .bc-message {
+      display: inline-block;
+      margin-left: 8px;
+      color: #25496b;
+      font-size: 12px;
+    }
+    .books-table {
+      overflow-x: auto;
+      border: 1px solid #d0dce8;
+      border-radius: 6px;
+    }
+    .books-table table {
+      margin-top: 0;
+    }
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+    .pagination button {
+      min-width: 36px;
+      padding: 7px 10px;
+      border: 1px solid #b9c4d0;
+      border-radius: 5px;
+      background: #fff;
+      color: #25496b;
+      cursor: pointer;
+    }
+    .pagination button.active {
+      background: #25496b;
+      color: #fff;
+    }
+    .registration-message {
+      color: #186b3d;
+      margin: 8px 0;
+    }
+    .registration-error {
+      color: #a12b2b;
+      margin: 8px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="site-header">
+      <img class="site-logo" src="{{ url_for('static', filename='photo_5271493918694515440_y.jpg') }}" alt="Jewish Home Library YVN">
+      <div>
+        <h1 class="site-title">Yerevan Jewish Home</h1>
+        <div class="site-subtitle">Home Library</div>
+      </div>
+    </header>
+
+    <div class="tabs">
+      <button class="tab-button active" data-tab="books-tab">Книги</button>
+      <a class="tab-button" href="/admin">Админ</a>
+    </div>
+
+    <section class="box active" id="books-tab">
+      <h2>Список книг</h2>
+      <div class="search-row">
+        <input type="search" class="search-input" id="books-search" maxlength="100" placeholder="Поиск по названию, автору или ID...">
+      </div>
+      <div id="books-list">
+        {% if books %}
+        <div class="books-table">
+        <table><thead><tr><th>ID</th><th>Название</th><th>Автор</th><th>Год</th><th>Статус</th></tr></thead><tbody>
+        {% for book in books %}
+        <tr><td>{{ book.id }}</td><td>{{ book.title }}</td><td>{{ book.author }}</td><td>{{ book.year or '' }}</td><td>{{ book.status }}</td></tr>
+        {% endfor %}
+        </tbody></table>
+        </div>
+        {% else %}
+        Книг нет
+        {% endif %}
+      </div>
+    </section>
+
+    <section class="box active" id="registration-tab">
+      <h2>Регистрация читателя</h2>
+      {% if registration_message %}<div class="registration-message">{{ registration_message }}</div>{% endif %}
+      {% if registration_error %}<div class="registration-error">{{ registration_error }}</div>{% endif %}
+      <form class="bc-form" method="post" action="{{ url_for('register_reader') }}">
+        <div class="bc-form-grid">
+          <label>ФИО<input name="name" type="text" autocomplete="name" required></label>
+          <label>Телефон или другой контакт<input name="phone" type="text" autocomplete="tel" required></label>
+          <button class="bc-submit" type="submit">Зарегистрироваться</button>
+        </div>
+      </form>
+    </section>
+  </div>
+
+  <script>
+    var bookTab = document.getElementById('books-tab');
+    var booksSearch = document.getElementById('books-search');
+    var booksList = document.getElementById('books-list');
+    var booksPageSize = 30;
+    var booksPage = 1;
+    var booksRows = [];
+
+    function switchTab(name) {
+      var buttons = document.querySelectorAll('.tab-button');
+      for (var i = 0; i < buttons.length; i++) {
+        var btn = buttons[i];
+        if (btn.dataset.tab === name) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      }
+      if (name === 'books-tab') {
+        bookTab.classList.add('active');
+      } else {
+        bookTab.classList.remove('active');
+      }
+    }
+
+    var buttons = document.querySelectorAll('.tab-button');
+    for (var i = 0; i < buttons.length; i++) {
+      buttons[i].addEventListener('click', function() {
+        switchTab(this.dataset.tab);
+      });
+    }
+
+    function esc(value) {
+      return String(value == null ? '' : value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g, '&quot;').replace(/'/g, '&#039;');
+    }
+
+    function filterBooks(rows, query) {
+      if (!query) return rows;
+      return rows.filter(function(row) {
+        return ['id', 'title', 'author', 'year'].some(function(field) {
+          return String(row[field] == null ? '' : row[field]).toLowerCase().indexOf(query) >= 0;
+        });
+      });
+    }
+
+    function renderBooks(rows) {
+      var filteredRows = filterBooks(rows, String(booksSearch.value || '').trim().toLowerCase());
+      booksRows = rows;
+      var pageCount = Math.max(1, Math.ceil(filteredRows.length / booksPageSize));
+      booksPage = Math.min(booksPage, pageCount);
+
+      if (!filteredRows.length) {
+        booksList.innerHTML = 'Книг нет';
+        return;
+      }
+
+      var first = (booksPage - 1) * booksPageSize;
+      var last = Math.min(first + booksPageSize, filteredRows.length);
+      var html = '<div class="books-table"><table><thead><tr><th>ID</th><th>Название</th><th>Автор</th><th>Год</th><th>Статус</th></tr></thead><tbody>';
+      for (var i = first; i < last; i++) {
+        var r = filteredRows[i];
+        var publicStatus = r.status === 'выдан' ? 'выдан' : 'в наличии';
+        html += '<tr><td>' + esc(r.id) + '</td><td>' + esc(r.title) + '</td><td>' + esc(r.author) + '</td><td>' + esc(r.year || '') + '</td><td>' + esc(publicStatus) + '</td></tr>';
+      }
+      html += '</tbody></table></div><div class="pagination">';
+      if (pageCount > 1) {
+        html += '<button type="button" data-page="' + Math.max(1, booksPage - 1) + '">&laquo;</button>';
+        for (var page = 1; page <= pageCount; page++) {
+          html += '<button type="button" class="' + (page === booksPage ? 'active' : '') + '" data-page="' + page + '">' + page + '</button>';
+        }
+        html += '<button type="button" data-page="' + Math.min(pageCount, booksPage + 1) + '">&raquo;</button>';
+      }
+      html += '</div>';
+      booksList.innerHTML = html;
+    }
+
+    booksList.addEventListener('click', function(event) {
+      var button = event.target.closest('button[data-page]');
+      if (!button) return;
+      booksPage = Number(button.dataset.page) || 1;
+      renderBooks(booksRows);
+    });
+
+    function requestBooks(success, error) {
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', '/api/books', true);
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState !== 4) return;
+        if (xhr.status >= 200 && xhr.status < 300) {
+          try {
+            var rows = JSON.parse(xhr.responseText);
+            if (!Array.isArray(rows)) {
+              throw new Error('API returned non-array');
+            }
+            success(rows, false);
+          } catch (e) {
+            error('Не удалось загрузить книги');
+          }
+        } else {
+          error('Не удалось загрузить книги');
+        }
+      };
+      xhr.onerror = function() {
+        error('Не удалось загрузить книги');
+      };
+      xhr.send();
+    }
+
+    function loadData() {
+      requestBooks(function(rows) {
+        renderBooks(rows);
+      }, function(message) { booksList.innerHTML = esc(message); });
+    }
+
+    booksSearch.addEventListener('input', function() {
+      booksPage = 1;
+      renderBooks(booksRows);
+    });
+
+    loadData();
+    setInterval(loadData, 300000);
+  </script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+# Секреты сервисного аккаунта Google
+*.json
+!books.json
+!package*.json
+
+# Локальные данные и сборка
+.env
+library.db
+build/
+dist/
+__pycache__/
+.pytest_cache/
+.venv/

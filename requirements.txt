@@ -1,0 +1,7 @@
+Flask
+gunicorn
+google-api-python-client
+google-auth
+opencv-contrib-python
+Pillow
+supabase
