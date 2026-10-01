@@ -10,9 +10,17 @@ import urllib.parse
 import urllib.request
 import uuid
 import threading
-import tkinter as tk
-from tkinter import ttk, messagebox, simpledialog
 from datetime import date, datetime, timezone
+
+try:
+    import tkinter as tk
+    from tkinter import ttk, messagebox, simpledialog
+except ModuleNotFoundError:
+    class _TkUnavailable:
+        Tk = object
+
+    tk = _TkUnavailable()
+    ttk = messagebox = simpledialog = None
 
 from google_sheets_sync import DEFAULT_API_URL, GoogleSheetsSyncError, fetch_books, save_books, fetch_readers, save_readers
 
