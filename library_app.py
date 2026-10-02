@@ -509,7 +509,12 @@ def sync_books_with_google():
                     INSERT INTO books(title,author,year,isbn,status,inventory_id,updated_at,
                     reader_id,reader_name,issue_date,due_date,return_date)
                     VALUES(?,?,?,?,?,?,?,?,?,?,?,?)
-                """, values + (inventory_id,))
+                """, (
+                    record["title"], record["author"], record["year"], record["isbn"],
+                    record["status"], inventory_id, record["updated_at"],
+                    record.get("reader_id"), record.get("reader_name"),
+                    record.get("issue_date"), record.get("due_date"), record.get("return_date"),
+                ))
         merged_readers = dict(local_readers)
         for reader_id, remote_reader in remote_readers.items():
             local_reader = local_readers.get(reader_id)
