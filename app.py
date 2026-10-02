@@ -260,6 +260,22 @@ def admin_logout():
     return redirect(url_for("admin"))
 
 
+@app.route("/admin/sync", methods=["POST"])
+def admin_sync():
+    if not session.get("admin"):
+        return redirect(url_for("admin"))
+
+    try:
+        count = library_app.sync_books_with_google()
+        _invalidate_public_books_cache()
+        session["admin_message"] = f"Синхронизация завершена. Книг в базе: {count}."
+        session.pop("admin_error", None)
+    except Exception as exc:
+        session["admin_message"] = f"Ошибка синхронизации: {exc}"
+        session["admin_error"] = True
+    return redirect(url_for("admin"))
+
+
 @app.route("/api/books", methods=['GET'])
 def api_books():
     return jsonify(public_books())
@@ -277,6 +293,8 @@ def sitemap():
 
 @app.route("/api/sync", methods=["POST"])
 def api_sync():
+    if not session.get("admin"):
+        return jsonify({"message": "Требуется вход администратора"}), 401
     try:
         count = library_app.sync_books_with_google()
         _invalidate_public_books_cache()
