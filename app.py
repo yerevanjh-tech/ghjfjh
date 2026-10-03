@@ -13,7 +13,7 @@ app.secret_key = os.getenv("FLASK_SECRET_KEY", "library-admin-secret")
 
 APP_DIR = os.path.dirname(os.path.abspath(__file__))
 DB = os.path.abspath(os.getenv("LIBRARY_DB_PATH", os.path.join(APP_DIR, "library.db")))
-PUBLIC_BOOKS_CACHE_SECONDS = max(0, int(os.getenv("PUBLIC_BOOKS_CACHE_SECONDS", "300")))
+PUBLIC_BOOKS_CACHE_SECONDS = max(0, int(os.getenv("PUBLIC_BOOKS_CACHE_SECONDS", "60")))
 _public_books_cache = None
 _public_books_cache_expires_at = 0.0
 _public_books_cache_fetcher = None
@@ -157,7 +157,11 @@ def public_books():
     merged = {}
     con = db()
     rows = con.execute(
-        "SELECT id, inventory_id, title, author, year, status FROM books WHERE TRIM(COALESCE(title, '')) <> '' AND TRIM(COALESCE(author, '')) <> '' ORDER BY title"
+        "SELECT id, inventory_id, title, author, year, "
+        "CASE WHEN EXISTS (SELECT 1 FROM loans WHERE loans.book_id=books.id AND loans.return_date IS NULL) "
+        "THEN 'выдана' ELSE status END AS status "
+        "FROM books WHERE TRIM(COALESCE(title, '')) <> '' "
+        "AND TRIM(COALESCE(author, '')) <> '' ORDER BY title"
     ).fetchall()
     con.close()
 
